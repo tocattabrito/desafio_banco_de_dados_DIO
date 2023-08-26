@@ -1,0 +1,81 @@
+Arquivos para popular as tabelas criadas para o banco de dados
+ecommerce_01
+
+--
+-- Tabela Endereço
+-- 
+
+-- Endereço -> Clientes
+INSERT INTO endereco 
+(cep,logradouro,numero,complemento,bairro,cidade,uf) 
+VALUES
+	('69308230','Rua Madre Silvestre','50','','Treze de Setembro','Boa Vista','RR'),
+    ('68903881','Alameda Meridional do Norte','20','','Araxá','Macapá','PA'),
+    ('29148550','Rua Maia','50','','Mucuri','Cariacica','ES'),
+    ('57305060','Rua Mané Garrincha','200','','Manuel Teles','Arapiraca','AL'),
+    ('64207400','Quadra M','500','','Planalto de Monteserra The','Parnaíba','PI');
+    
+    
+    
+-- Endereço -> Fornecedor
+INSERT INTO endereco 
+(cep,logradouro,numero,complemento,bairro,cidade,uf) 
+VALUES
+('88139168','Rua Itauna','10','Praia do Sonho ','(Ens Brito)','Palhoça','SC'),
+('73310247','Área SHD Bloco O','S/N','Setor de Hotéis e Diversões','Planaltina','Brasília','DF'),
+('76873524','Rua das Orquídeas','255','','Setor 04','Ariquemes','RO'),
+('25211206','Rua Projetada B','11','','Vila Urussaí','Duque de Caxias','RJ'),
+('52090037','2ª Travessa Antônio Carneiro','37','','Nova Descoberta','Recife','PE');
+
+
+-- Endereço -> Vendedor_terceiro
+INSERT INTO endereco
+	(cep,logradouro,numero,complemento,bairro,cidade,uf) 
+VALUES
+('58010827','Galeria Jardim','320','','Centro','João Pessoa','PB'),
+('71575655','Quadra Quadra 41','1122','Conjunto L','Paranoá','Brasília','DF'),
+('93819876','Rua Jorge Brasiliano Silveira','100','','São Jacó','Sapiranga','RS'),
+('79108042','Rua Poconé Vila ','20','','Entroncamento','Campo Grande','MS'),
+('88357167','Rua PR - 012','15','','Ponta Russa','Brusque','SC');
+
+
+
+--
+-- Tabela Contato
+-- 
+
+-- Contato
+INSERT INTO contato 
+			(celular,email,id_endereco) 
+VALUES
+('95993757241','maria.rego@geradornv.com.br','1'),
+('96972886861','glauco.carvel@geradornv.com.br','2'),
+('27976259984','eldimar.mesquita@geradornv.com.br','3'),
+('82968177142','deyse.amancio@geradornv.com.br','4'),
+('86979182894','maria.linhares@geradornv.com.br','5');
+
+-- Fornecedor
+INSERT INTO contato
+	(celular,email, id_endereco)
+VALUES
+('4726316112','industria.duarte@geradornv.com.br','6'),
+('61991386654','farmacia.simoes@geradornv.com.br','7'),
+('69993435740','varejo.rabelo@geradornv.com.br','8'),
+('21998876635','esportes.camelo@geradornv.com.br','9'),
+('87993433421','comercio.texeira@geradornv.com.br','10');
+
+	-- Vendedor_terceiro
+INSERT INTO contato
+	(celular,email, id_endereco)
+VALUES
+('83972130863','varejo.firmino@geradornv.com.br','11'),
+('61975423287','ferragens.figueiras@geradornv.com.br','12'),
+('51996044294','atacado.costa@geradornv.com.br','13'),
+('67988510898','bar.quintela@geradornv.com.br','14'),
+('49972072627','ferragens.boelho@geradornv.com.br','15');
+
+
+--
+-- Tabela Contato
+-- 
+

@@ -1,0 +1,257 @@
+-- SCRIPT SQL DO BANCO DE DADOS ECOMMERCE_01
+
+--
+-- Criação do banco de Dados ecommerce_01
+--
+
+CREATE DATABASE ecommerce_01;
+
+
+--
+-- Criação da tabela endereço
+--
+
+CREATE TABLE endereco(
+	id_endereco int AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    cep char(8),
+    logradouro varchar(50) NOT NUll,
+    numero varchar(4) NOT NULL,
+    complemento varchar(50),
+    bairro varchar(50) NOT NULL,
+    cidade varchar(50) NOT NULL,
+    up char(2)
+);
+
+--
+-- Criação da tabela contato
+--
+
+CREATE TABLE contato(
+	id_contato int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    id_endereco int,
+    celular char(8) NOT NULL,
+    email varchar(100) NOT NULL,
+    
+    CONSTRAINT fk_endereco FOREIGN KEY(id_endereco)
+    REFERENCES endereco(id_endereco)
+);
+
+--
+-- Criação da tabela vendedor_terceiro
+--
+
+CREATE TABLE vendedor_terceiro(
+	id_vendedor_terceiro int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    id_contato int,
+    razao_social varchar(50) NOT NULL,
+    nome_fantasia varchar(50) NOT NULL,
+    cnpj char(14) NOT NULL UNIQUE,
+    cpf char(11) NOT NULL UNIQUE,
+    
+    CONSTRAINT fk_id_contato FOREIGN KEY (id_contato)
+    REFERENCES contato(id_contato)
+    
+);
+
+--
+-- Criação da tabela fornecedor
+--
+
+CREATE TABLE fornecedor(
+	id_fornecedor int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    id_contato int,
+    razao_social varchar(50) NOT NULL,
+    nome_fantasia varchar(50) NOT NULL,
+    cnpj char(14) NOT NULL UNIQUE,
+    cpf char(11) NOT NULL UNIQUE,
+    
+    CONSTRAINT fk_idContato FOREIGN KEY (id_contato)
+    REFERENCES contato(id_contato)
+    
+);
+
+--
+-- Criação da tabela cliente
+--
+CREATE TABLE cliente(
+	id_cliente int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    primeiro_nome varchar(20) NOT NULL,
+    nome_meio char(2), -- exemplo letra + ponto (B.)
+    cpf char(11) NOT NULL UNIQUE,
+    cnpj char(14) NOT NULL UNIQUE,
+    id_contato int,
+    
+    CONSTRAINT fk_contato_cliente FOREIGN KEY (id_contato)
+    REFERENCES contato(id_contato)
+    
+);
+
+-- Realizar o check em cnpj e cpf antes de inserir na tabela
+-- cliente
+
+DELIMITER //
+CREATE TRIGGER check_cnpj_cpf_before_insert
+BEFORE INSERT ON cliente
+FOR EACH ROW
+BEGIN
+    IF NEW.cnpj IS NOT NULL AND NEW.cpf IS NOT NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Não é permitido cadastrar CNPJ e CPF ao mesmo tempo.';
+    END IF;
+END;
+//
+DELIMITER ;
+
+--
+-- Criação da tabela pedido
+--
+
+CREATE TABLE pedido(
+	id_pedido int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    data_pedido date NOT NULL,
+    status_pedido ENUM('Processando','Cancelado','Recebido','Enviado','Entregue'),
+    sub_total decimal(4,2) NOT NULL,
+    frete decimal(4,2) NOT NULL,
+    total_pedido decimal(4,2) NOT NULL,
+    id_cliente int,
+    id_vendedor_terceiro int,
+    
+    CONSTRAINT fk_id_cliente FOREIGN KEY (id_cliente)
+    REFERENCES cliente(id_cliente),
+    
+    CONSTRAINT fk_id_vendedor_terceiro FOREIGN KEY (id_vendedor_terceiro)
+    REFERENCES vendedor_terceiro(id_vendedor_terceiro)
+    
+);
+
+
+--
+-- Criação da tabela pagamento
+--
+
+CREATE TABLE pagamento(
+	id_pagamento int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	metodo_pagamento ENUM('Credito','Débito','Pix','Dinheiro'),
+	id_pedido int,
+	
+	CONSTRAINT fk_id_pedido FOREIGN KEY(id_pedido)
+	REFERENCES pedido(id_pedido)
+);
+
+--
+-- Criação da tabela produto
+--
+
+CREATE TABLE produto(
+	id_produto int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	descricao varchar(50),
+	categoria ENUM('Veiculo','Construção','Hobby','Outros') DEFAULT 'Veiculo',
+	valor_unitario double(4,2)
+	
+	
+);
+
+--
+-- Criação da tabela estoque
+--
+
+CREATE TABLE estoque(
+	id_estoque int 	PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	quantidade int NOT NULL,
+	id_local_armazenado int,
+	
+	CONSTRAINT fk_id_local_armazenado FOREIGN KEY(id_local_armazenado)
+	REFERENCES local_armazenado(id_local_armazenado)
+);
+
+--
+-- Criação da tabela local_armazenado
+--
+
+CREATE TABLE local_armazenado(
+	id_local_armazenado int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	rua char(4),
+	rack char(2),
+	pratileira ENUM('Térreo','N1','N2','N3','N4','N5') DEFAULT 'Térreo',
+		
+);
+
+--
+-- Criação da tabela produto_pedido
+--
+
+CREATE TABLE produto_pedido(
+	id_produto int,
+	id_pedido int,
+	quantidade int NOT NULL,
+	
+	CONSTRAINT fk_id_produto_pedido FOREIGN KEY(id_produto)
+	REFERENCES  produto (id_produto),
+	
+	CONSTRAINT fk_id_pedido_produto FOREIGN KEY(id_pedido)
+	REFERENCES  pedido (id_pedido)
+);
+
+--
+-- Criação da tabela entrega
+--
+
+CREATE TABLE entrega(
+	id_rastreamento int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	id_pedido int,
+	status_pedido ENUM('Recebido','Separado','Enviado','Entregue') DEFAULT 'Recebido',
+	
+	CONSTRAINT fk_id_pedido_entrega FOREIGN KEY (id_pedido)
+	REFERENCES pedido (id_pedido)
+	
+);
+
+
+--
+-- Criação da tabela produto_vendedor_terceiro
+--
+
+CREATE TABLE produto_vendedor_terceiro(
+	id_produto int,
+	id_vendedor_terceiro int,
+	quantidade int NOT NULL,
+	
+	CONSTRAINT fk_id_produto_vendedor_produto FOREIGN KEY(id_produto)
+	REFERENCES  produto (id_produto),
+	
+	CONSTRAINT fk_id_produto_vendedor_terceiro FOREIGN KEY(id_vendedor_terceiro)
+	REFERENCES  vendedor_terceiro (id_vendedor_terceiro)
+);
+
+--
+-- Criação da tabela produto_fornecedor
+--
+
+CREATE TABLE produto_fornecedor(
+	id_produto int,
+	id_fornecedor int,
+	quantidade int NOT NULL,
+	
+	CONSTRAINT fk_id_produto_produto FOREIGN KEY(id_produto)
+	REFERENCES  produto (id_produto),
+	
+	CONSTRAINT fk_id_produto_fornecedor FOREIGN KEY(id_fornecedor)
+	REFERENCES  fornecedor (id_fornecedor)
+);
+--
+-- Criação da tabela cliente_vendedor
+--
+
+CREATE TABLE cliente_vendedor(
+	id_cliente int,
+	id_vendedor_terceiro int,
+		
+	CONSTRAINT fk_id_cliente_vendedor FOREIGN KEY(id_cliente)
+	REFERENCES  cliente (id_cliente),
+	
+	CONSTRAINT fk_id_vendedor_cliente FOREIGN KEY(id_vendedor_terceiro)
+	REFERENCES  vendedor_terceiro (id_vendedor_terceiro)
+);
+
+
+
