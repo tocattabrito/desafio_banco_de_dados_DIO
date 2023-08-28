@@ -271,12 +271,62 @@ VALUES
 	(9,4,100),
 	(10,5,1000);
 
+
+
 ----------------------------------------------------------
 # Queries a serem respondidas
+----------------------------------------------------------
+
 
 1. Quantos pedidos foram feitos por cadas cliente?
+
+SELECT
+    id_cliente,
+    COUNT(id_pedido) AS total_pedidos
+FROM
+    pedido
+GROUP BY
+    id_cliente;
+    
+
 2. Algum vendedor também é fornecedor?
+
+SELECT
+    vendedor.id_vendedor_terceiro,
+    vendedor.razao_social
+FROM
+    vendedor_terceiro vendedor
+WHERE
+    vendedor.cnpj IN (SELECT cnpj FROM fornecedor);
+    
+    
 3. Relação de produtos fornecedor e estoque?
+
+SELECT
+    prod.id_produto,
+    prod.descricao,
+    forn.razao_social,
+   	forn.nome_fantasia,
+    prod_forn.quantidade
+FROM
+    produto_fornecedor prod_forn
+JOIN
+    produto prod ON  prod_forn.id_produto = prod.id_produto
+JOIN
+    fornecedor forn ON prod_forn.id_fornecedor = forn.id_fornecedor;
+
+
+
 4. Relação de nomes dos fornecedores e nomes dos produtos.
+
+SELECT
+    forn.razao_social AS nome_fornecedor,
+    prod.descricao AS nome_produto
+FROM
+    fornecedor forn
+JOIN
+    produto_fornecedor prod_forn ON forn.id_fornecedor = prod_forn.id_fornecedor
+JOIN
+    produto prod ON prod_forn.id_produto = prod.id_produto;
 
 
